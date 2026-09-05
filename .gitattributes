@@ -1,0 +1,19 @@
+# Line endings: normalise to LF in the repo, keep the OS convention in the
+# working tree. Without this, every commit from Windows warns and files show as
+# modified with zero content change.
+* text=auto
+
+*.py    text
+*.json  text
+*.md    text
+*.txt   text
+*.ini   text
+*.cfg   text
+*.sh    text eol=lf
+
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.pdf   binary
+*.db    binary
+*.zip   binary

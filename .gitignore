@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual env
+.venv/
+venv/
+
+# Local data / build
+*.db
+build/
+dist/
+# Our own PyInstaller spec is tracked; auto-generated ones stay ignored.
+*.spec
+!packscope.spec
+
+# Claude Code local session settings — per-machine, never shared.
+.claude/

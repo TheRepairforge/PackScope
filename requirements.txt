@@ -1,0 +1,7 @@
+# PackScope runtime dependencies
+pyserial>=3.5
+customtkinter>=5.2
+pillow>=10.0        # CTkImage (logos)
+
+# Dev / test only
+pytest>=8.0

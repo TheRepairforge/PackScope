@@ -1,0 +1,79 @@
+name: Build release binaries
+
+# Builds standalone PackScope executables for Windows, Linux and macOS.
+# Runs on every version tag (v*), attaching the binaries to the GitHub Release,
+# and can be triggered by hand to smoke-test the build.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: PackScope-windows
+          - os: ubuntu-latest
+            artifact: PackScope-linux
+          - os: macos-latest
+            artifact: PackScope-macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Run tests (headless on Linux)
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            sudo apt-get update && sudo apt-get install -y xvfb
+            xvfb-run -a python -m pytest -q
+          else
+            python -m pytest -q
+          fi
+
+      - name: Build executable
+        run: pyinstaller --noconfirm packscope.spec
+
+      - name: Package
+        shell: bash
+        run: |
+          cd dist
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            7z a "../${{ matrix.artifact }}.zip" PackScope.exe
+          else
+            tar -czf "../${{ matrix.artifact }}.tar.gz" PackScope
+          fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}.zip
+            ${{ matrix.artifact }}.tar.gz
+          if-no-files-found: ignore
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ matrix.artifact }}.zip
+            ${{ matrix.artifact }}.tar.gz
