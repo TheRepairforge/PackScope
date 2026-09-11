@@ -124,32 +124,50 @@ def read_protocol_version(bridge: BridgeClient) -> int | None:
 def _read_extended(bridge: BridgeClient, r: Reading) -> None:
     """Best-effort extended D4/D6 read (latched-fault markers, counters, dates).
 
-    CAVEAT — needs hardware validation: on-device, readExtended() does the whole
-    D4/D6 sweep inside ONE ENABLE session after a single TESTMODE. Through the
-    bridge each command is a separate transaction that toggles ENABLE and resets
-    the bus, so TESTMODE may not persist across them. If it doesn't, the reads
-    return 0xFF and this degrades gracefully (ext_valid stays False, latched_fault
-    stays False — the verdict is still computed from cell/temperature signals).
-    If hardware proves TESTMODE doesn't survive, the fix is a dedicated firmware
-    bridge opcode that runs the sweep device-side (phase-2 firmware change).
+    On-device, readExtended() does the whole D4/D6 sweep inside ONE ENABLE session
+    after a single TESTMODE. The bridge CANNOT: every bridged command is a separate
+    transaction and the firmware power-cycles ENABLE around each one, which drops
+    TESTMODE before the next read. So these addressed reads run OUTSIDE testmode and
+    come back as bus-idle 0xFF or phase-echo noise, for every pack (issue #13).
+
+    An addressed read answered in TESTMODE ends in a 0x06 ACK; a dropped-TESTMODE read
+    does not. We gate the whole block on that ACK: unless every read carries it, the
+    block is untrusted (ext_valid stays False, latched_fault "—", verdict computed from
+    cell/temperature signals) rather than misparsed into a false latched fault
+    (DATA_MODEL §4, fail-clean). A real over-the-bridge read awaits a device-side sweep
+    opcode that runs the sweep in one session (fix B; backlog #53).
     """
     if r.is_f0513:
         return
     try:
         bridge.transaction(TESTMODE_CMD)
-        fault_a = bridge.transaction(_d6_read_byte(0x58D))[0]
-        fault_b = bridge.transaction(_d6_read_byte(0x309))[0]
-        asm = [bridge.transaction(_d4_read(a, 1))[0] for a in (0x000, 0x001, 0x002)]
-        soc = bridge.transaction(_d4_read(0x150, 2))[:2]
-        od_event = bridge.transaction(_d4_read(0x0BA, 1))[0]
-        ol_block = bridge.transaction(_d4_read(0x08D, 7))[:7]
+        rf_a  = bridge.transaction(_d6_read_byte(0x58D))
+        rf_b  = bridge.transaction(_d6_read_byte(0x309))
+        r_asm = [bridge.transaction(_d4_read(a, 1)) for a in (0x000, 0x001, 0x002)]
+        r_soc = bridge.transaction(_d4_read(0x150, 2))
+        r_od  = bridge.transaction(_d4_read(0x0BA, 1))
+        r_ol  = bridge.transaction(_d4_read(0x08D, 7))
         bridge.transaction(TESTMODE_EXIT_CMD)
     except (BridgeError, IndexError):
         return  # extended is optional; leave ext_valid False
 
-    # A 0xFF over-discharge count means the D4 path did not answer, so the WHOLE
-    # extended block — OD/OL and the D6 fault markers — is untrustworthy (one old
-    # pack read odCnt=FF with marker 0x309=FD -> a false latched/70 %) (ino: readExtended).
+    # An addressed D4/D6 read answered IN TESTMODE ends in a 0x06 ACK (see _d4_read).
+    # Over the bridge the firmware toggles ENABLE per transaction, power-cycling the
+    # bus and dropping TESTMODE, so these reads run OUTSIDE testmode and return bus-idle
+    # 0xFF or phase-echo noise with NO valid ACK. Trust the whole block only when every
+    # read carried its terminator — otherwise a noisy marker (e.g. 0x309=0xFD) fabricates
+    # a false latched fault (issue #13). A real device-side sweep (fix B) restores the ACKs.
+    reads = [rf_a, rf_b, *r_asm, r_soc, r_od, r_ol]
+    if not all(len(x) >= 1 and x[-1] == 0x06 for x in reads):
+        return  # extended block unreliable over this bridge -> ext_valid stays False, latched "—"
+
+    fault_a, fault_b = rf_a[0], rf_b[0]
+    asm = [x[0] for x in r_asm]
+    soc = r_soc[:2]
+    od_event = r_od[0]
+    ol_block = r_ol[:7]
+
+    # A 0xFF over-discharge count means the D4 path did not answer (ino: readExtended).
     if od_event == 0xFF:
         return
     decode.apply_extended(r, fault_a, fault_b, asm, soc, od_event, ol_block)

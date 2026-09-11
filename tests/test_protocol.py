@@ -80,17 +80,52 @@ def test_read_all_bl1850b_latched_suspect():
     bridge.add(protocol.MODEL_CMD, b"BL1850B" + b"\x00" * 9)
     bridge.add(protocol.READ_DATA_CMD, build_live(18570, [3720] * 5, 2992, 3002))
     bridge.add(protocol.READ_MSG_CMD, build_msg_resp("1809150211AA0102", msg))
-    # Extended: latched-fault markers non-zero (0x58D=0x0B, 0x309=0x48). The block is
-    # only trusted when the over-discharge count is not 0xFF (#38), so answer that D4 read.
+    # Extended: a COMPLETE, in-TESTMODE block — every addressed read carries its 0x06 ACK
+    # (that terminator is what proves the read was answered in TESTMODE; #13). Latched-fault
+    # markers non-zero (0x58D=0x0B, 0x309=0x48), over-discharge count not 0xFF (#38).
     bridge.add(protocol._d6_read_byte(0x58D), bytes([0x0B, 0x06]))
     bridge.add(protocol._d6_read_byte(0x309), bytes([0x48, 0x06]))
+    bridge.add(protocol._d4_read(0x000, 1), bytes([0x18, 0x06]))
+    bridge.add(protocol._d4_read(0x001, 1), bytes([0x09, 0x06]))
+    bridge.add(protocol._d4_read(0x002, 1), bytes([0x0F, 0x06]))
+    bridge.add(protocol._d4_read(0x150, 2), bytes([0x00, 0x14, 0x06]))
     bridge.add(protocol._d4_read(0x0BA, 1), bytes([0x02, 0x06]))   # 2 over-discharge events
+    bridge.add(protocol._d4_read(0x08D, 7), bytes([0, 0, 0, 0, 0, 0, 0, 0x06]))
 
     r = protocol.read_all(bridge, extended=True)
 
     assert r.locked is True
     assert r.latched_fault is True
     assert compute_verdict(r) == Verdict.SUSPECT
+
+
+def test_read_all_bridge_noise_no_false_latched():
+    # #13: over the bridge, TESTMODE does not persist across the per-transaction ENABLE
+    # power-cycle, so the D4/D6 addressed reads run OUTSIDE testmode and come back as
+    # phase-echo NOISE with NO 0x06 ACK terminator. A non-0xFF noisy marker must NOT be
+    # trusted as a latched fault. Ground truth: HEALTHY (balanced cells, normal temps,
+    # unlocked) — a good pack that PackScope was falsely flagging as latched.
+    bridge = FakeBridge()
+    bridge.add(protocol.MODEL_CMD, b"BL1830" + b"\x00" * 10)
+    bridge.add(protocol.READ_DATA_CMD, build_live(18570, [3720] * 5, 2992, 3002))
+    bridge.add(protocol.READ_MSG_CMD, build_msg_resp("1809150211AA0102"))
+    # Markers non-zero (would fake a latched) AND od not 0xFF (slips the #38 guard), but NONE
+    # of the reads carry the 0x06 ACK — exactly what a dropped-TESTMODE bridge returns.
+    bridge.add(protocol._d6_read_byte(0x58D), bytes([0xFD, 0xFD]))
+    bridge.add(protocol._d6_read_byte(0x309), bytes([0xFD, 0xFD]))
+    bridge.add(protocol._d4_read(0x000, 1), bytes([0x86, 0x86]))
+    bridge.add(protocol._d4_read(0x001, 1), bytes([0x86, 0x86]))
+    bridge.add(protocol._d4_read(0x002, 1), bytes([0x86, 0x86]))
+    bridge.add(protocol._d4_read(0x150, 2), bytes([0x08, 0x24, 0x24]))
+    bridge.add(protocol._d4_read(0x0BA, 1), bytes([0x43, 0x43]))    # not 0xFF -> old guard passes
+    bridge.add(protocol._d4_read(0x08D, 7), bytes([0x43] * 8))
+
+    r = protocol.read_all(bridge, extended=True)
+
+    assert r.valid is True
+    assert r.ext_valid is False        # block rejected: no ACK terminator -> untrusted
+    assert r.latched_fault is False    # the #13 false positive is gone
+    assert compute_verdict(r) == Verdict.HEALTHY
 
 
 def test_standard_pack_with_nonascii_model_is_identified_by_frame():
