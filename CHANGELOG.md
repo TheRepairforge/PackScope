@@ -9,6 +9,20 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [1.0.1] - 2026-09-12
+
+### Fixed
+- **False "latched fault" over the bridge** (issue
+  [#13](https://github.com/TheRepairforge/PocketOBI/issues/13)). The extended D4/D6 reads
+  (latched-fault markers, wear counters) run over the USB bridge as separate transactions,
+  and the firmware power-cycles ENABLE around each one, which drops TESTMODE. Those reads then
+  come back as bus-idle `0xFF` or phase-echo noise; non-`0xFF` noise was being decoded as a
+  genuine latched fault and wrongly flagged healthy packs (notably older BL1830s) as
+  SUSPECT / "possible HW fix". PackScope now trusts the extended block only when every read
+  carries its `0x06` in-TESTMODE ACK terminator; otherwise it shows "—" and the verdict is
+  computed from cell/temperature data, matching the device's own reading. A real
+  over-the-bridge extended read awaits a device-side sweep opcode (firmware side).
+
 ## [1.0.0] - 2026-09-05
 
 First public release of the companion app, published as **PackScope** (renamed from the
