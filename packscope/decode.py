@@ -288,8 +288,12 @@ def apply_extended(r: Reading, fault_a: int, fault_b: int,
     counter_e = (ol[5] >> 4) | ((ol[6] & 0x0F) << 4)
     r.ol_event_count = counter_c + counter_e
 
-    # Latched real fault: a marker set to a real (non 0 / non 0xFF) value.
-    r.latched_fault = ((fault_a not in (0, 0xFF)) or (fault_b not in (0, 0xFF)))
+    # Latched-fault detection DISABLED (D24), in lockstep with the firmware. The D6 markers
+    # (0x58D/0x309) are NOT a per-pack fault record: two healthy BL1850B units read an identical
+    # 0x0B/0x49, and the one pack the marker was "confirmed" on reads the same 0x0B/0x48 constant.
+    # 0x0B/0x4x is the model's resting value, not a latch, so it does not drive a verdict. The raw
+    # bytes stay in fault_marker_a / fault_marker_b for the debug/extra view.
+    r.latched_fault = False
 
     # Over-discharge % / over-load % = round5up(count*100/charges).
     r.od_wear_pct = _round5up(r.od_event_count, r.charge_count)

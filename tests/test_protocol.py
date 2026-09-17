@@ -72,8 +72,9 @@ def test_read_ordering_live_before_message():
     assert live_i < msg_i
 
 
-def test_read_all_bl1850b_latched_suspect():
-    # Balanced cells, normal temps, but the latched marker is set (via extended).
+def test_read_all_bl1850b_locked_repairable():
+    # Balanced cells, normal temps, charger-locked (nibble=3). The D6 markers are set but
+    # D24 no longer treats them as latched: the lock drives the verdict -> REPAIRABLE.
     msg = bytearray(32)
     msg[20] = 0x03                         # locked nibble
     bridge = FakeBridge()
@@ -81,8 +82,8 @@ def test_read_all_bl1850b_latched_suspect():
     bridge.add(protocol.READ_DATA_CMD, build_live(18570, [3720] * 5, 2992, 3002))
     bridge.add(protocol.READ_MSG_CMD, build_msg_resp("1809150211AA0102", msg))
     # Extended: a COMPLETE, in-TESTMODE block — every addressed read carries its 0x06 ACK
-    # (that terminator is what proves the read was answered in TESTMODE; #13). Latched-fault
-    # markers non-zero (0x58D=0x0B, 0x309=0x48), over-discharge count not 0xFF (#38).
+    # (that terminator is what proves the read was answered in TESTMODE; #13). D6 markers
+    # non-zero (0x58D=0x0B, 0x309=0x48) — the BL1850B constant, not a latch — od count not 0xFF (#38).
     bridge.add(protocol._d6_read_byte(0x58D), bytes([0x0B, 0x06]))
     bridge.add(protocol._d6_read_byte(0x309), bytes([0x48, 0x06]))
     bridge.add(protocol._d4_read(0x000, 1), bytes([0x18, 0x06]))
@@ -95,8 +96,8 @@ def test_read_all_bl1850b_latched_suspect():
     r = protocol.read_all(bridge, extended=True)
 
     assert r.locked is True
-    assert r.latched_fault is True
-    assert compute_verdict(r) == Verdict.SUSPECT
+    assert r.latched_fault is False
+    assert compute_verdict(r) == Verdict.REPAIRABLE
 
 
 def test_read_all_bridge_noise_no_false_latched():

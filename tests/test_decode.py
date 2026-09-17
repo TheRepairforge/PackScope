@@ -216,12 +216,13 @@ def test_mfg_date_invalid_shows_question_mark():
 # ---------------------------------------------------------------------------
 # Extended D4/D6
 # ---------------------------------------------------------------------------
-def test_extended_latched_fault_marker():
-    # BL1850B: D6 0x58D=11, 0x309=72 -> latched real fault.
+def test_extended_fault_markers_kept_raw_never_latched():
+    # D24: the D6 markers (0x0B/0x48 here) are the BL1850B resting constant, not a latch.
+    # apply_extended keeps the raw bytes but never derives a latched fault from them.
     r = Reading()
     r.valid = True
     decode.apply_extended(r, 0x0B, 0x48, [0, 0, 0], le(4434), 0, [0] * 7)
-    assert r.latched_fault is True
+    assert r.latched_fault is False
     assert r.fault_marker_a == 0x0B and r.fault_marker_b == 0x48
 
     # Healthy / deep-discharged packs: markers 0 (or 0xFF) -> not latched.

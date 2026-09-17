@@ -51,7 +51,7 @@ class Verdict(str, Enum):
     UNKNOWN = "UNKNOWN"        # V_UNKNOWN  (no valid pack)
     HEALTHY = "HEALTHY"        # V_HEALTHY  (green)
     REPAIRABLE = "REPAIRABLE"  # V_REPAIRABLE (yellow, false lock our unlock clears)
-    SUSPECT = "SUSPECT"        # V_SUSPECT  (orange, soft/empirical hint: latched or sensor spread)
+    SUSPECT = "SUSPECT"        # V_SUSPECT  (orange, soft/empirical hint: sensor spread / recoverable OD)
     REAL_FAULT = "REAL_FAULT"  # V_FAULT    (red, confirmed hardware fault)
 
 
@@ -105,7 +105,7 @@ class Reading:
 
     # --- extended (D4/D6), read only on standard packs ---
     ext_valid: bool = False
-    latched_fault: bool = False        # D6 0x58D/0x309 != 0 -> real fault, unlock won't hold
+    latched_fault: bool = False        # DISABLED (D24): D6 0x58D/0x309 is the model's resting constant, not a latch. Always False. Raw bytes in fault_marker_a/b.
     soc_raw: int = 0                   # D4 0x150: charge level (SOC), NOT health
     od_event_count: int = 0            # D4 0x0BA: over-discharge event count
     ol_event_count: int = 0            # D4 0x08D: over-load event count

@@ -124,9 +124,10 @@ def compute_verdict(r: Reading) -> Verdict:
     if red:
         return Verdict.REAL_FAULT
 
-    # Soft / empirical signals -> orange hint, never a firm red fault.
-    if r.latched_fault:                        # latched marker (D6, reverse-engineered)
-        return Verdict.SUSPECT
+    # Soft / empirical signals -> orange hint, never a firm red fault. The D6 "latched"
+    # marker used to feed a SUSPECT here; retired in D24 as non-discriminating (healthy
+    # BL1850B packs carry the same 0x0B/0x4x constant). A genuinely latched pack is still
+    # caught by its charger lock below (nibble=3 -> REPAIRABLE).
     if r.charger_locked or r.locked:
         return Verdict.REPAIRABLE
     # Recoverable over-discharge: a cell below the healthy minimum but above the dead

@@ -3,9 +3,10 @@
 Ground truth (real packs on the bench):
   * BL1860B — healthy                                          -> HEALTHY
   * BL1830B — faulty thermistor pinned at raw ~2430 (-30 C)    -> REAL_FAULT (red)
-  * BL1850B — latched marker set (soft, empirical)             -> SUSPECT (orange)
-  * false lock (healthy cells/temps, charger lock, no latched) -> REPAIRABLE
-Latched and sensor-spread are SOFT signals -> orange SUSPECT, not red.
+  * BL1850B — charger-locked (nibble=3), re-locks on charge     -> REPAIRABLE
+  * false lock (healthy cells/temps, charger lock)             -> REPAIRABLE
+The D6 "latched" marker was retired (D24): it is the BL1850B resting constant, not a
+fault, so it no longer drives a verdict. Sensor-spread is the remaining SOFT signal -> SUSPECT.
 """
 
 import os
@@ -82,10 +83,11 @@ def test_bl1830b_thermistor_pinned_is_real_fault():
     assert find_hardware_fault(r)[0] == HwFault.THERMISTOR
 
 
-def test_bl1850b_latched_is_suspect_not_red():
-    # Cells balanced, temps normal, but a latched marker -> orange SUSPECT.
-    r = make_reading([3.72] * 5, 26.05, 27.05, locked=True, latched=True)
-    assert compute_verdict(r) == Verdict.SUSPECT
+def test_marker_set_but_healthy_reads_healthy():
+    # D24: a balanced, unlocked pack whose D6 markers are set (the retired "latched"
+    # signal) must read HEALTHY, not SUSPECT. This is the misiukosta false positive (#13).
+    r = make_reading([3.72] * 5, 26.05, 27.05, latched=True)
+    assert compute_verdict(r) == Verdict.HEALTHY
     assert verdict_label(Verdict.SUSPECT) == "POSSIBLE HW FIX"
 
 
@@ -104,10 +106,11 @@ def test_false_lock_is_repairable():
     assert verdict_label(Verdict.REPAIRABLE) == "UNLOCK"
 
 
-def test_lock_plus_latched_is_suspect():
-    # Latched is checked before the lock -> SUSPECT wins over REPAIRABLE.
+def test_lock_plus_marker_is_repairable():
+    # D24: the retired marker no longer wins over the lock. A locked pack with the D6
+    # marker set reads REPAIRABLE (the lock drives it), not SUSPECT.
     r = make_reading([3.8] * 5, 25.0, 26.0, charger_locked=True, latched=True)
-    assert compute_verdict(r) == Verdict.SUSPECT
+    assert compute_verdict(r) == Verdict.REPAIRABLE
 
 
 def test_dead_cell_is_real_fault():

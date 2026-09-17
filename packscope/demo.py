@@ -1,8 +1,8 @@
 """Demo bridges — canned FakeBridge packs so the app runs with no hardware.
 
-Lets the UI be explored, screenshotted and demoed offline. The four packs match
-the states in the UI mockup: healthy, false-lock (repairable), thermistor fault
-and latched fault.
+Lets the UI be explored, screenshotted and demoed offline. The four packs cover
+healthy, false-lock (repairable), thermistor fault (red) and a genuinely
+charger-locked BL1850B (repairable, re-locks on charge).
 """
 
 from __future__ import annotations
@@ -83,7 +83,9 @@ def thermistor() -> FakeBridge:
 
 
 def latched() -> FakeBridge:
-    # Balanced/normal but latched marker set (D6) -> REAL_FAULT, unlock won't hold.
+    # A genuinely charger-locked BL1850B (nibble=3) that re-locks on charge -> REPAIRABLE.
+    # Its D6 markers (0x0B/0x48) are shown raw only; D24 retired them as a latched signal
+    # (they are the BL1850B resting constant). Function name kept for the captured pack id.
     b = _base(b"BL1850B",
               _live(18570, [3720, 3720, 3720, 3710, 3720], 2992, 3002),
               _msg("1809150211AA0102", cap_byte=0x23, lock_nib=3))
@@ -105,5 +107,5 @@ DEMO_PACKS = {
     "Healthy (BL1860B)": healthy,
     "False lock (BL1840B)": false_lock,
     "Thermistor (BL1830B)": thermistor,
-    "Latched (BL1850B)": latched,
+    "Locked (BL1850B)": latched,
 }

@@ -28,10 +28,13 @@ def test_demo_thermistor_real_fault():
     assert _verdict(demo.thermistor()) == Verdict.REAL_FAULT
 
 
-def test_demo_latched_suspect():
+def test_demo_locked_repairable():
+    # D24: the BL1850B demo is a genuinely charger-locked pack. Its D6 markers are kept
+    # raw (never latched), and the lock drives the verdict -> REPAIRABLE.
     r = protocol.read_all(demo.latched(), extended=True)
-    assert r.latched_fault is True
-    assert compute_verdict(r) == Verdict.SUSPECT
+    assert r.latched_fault is False
+    assert r.locked is True
+    assert compute_verdict(r) == Verdict.REPAIRABLE
 
 
 def test_all_demo_packs_read():

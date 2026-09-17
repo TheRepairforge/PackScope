@@ -2,7 +2,7 @@
 screen can be explored/demoed/filmed without real hardware. Everything is tagged
 is_demo=1 so db.clear_demo() removes it cleanly, leaving real data intact.
 
-Includes: a healthy daily pack, a latched pack that RE-LOCKED after unlock, a
+Includes: a healthy daily pack, a locked pack that RE-LOCKED after unlock, a
 thermistor-fault pack, a false-lock pack whose unlock HELD, and a pack that
 DEGRADES over time (HEALTHY -> HEALTHY -> SUSPECT -> REAL_FAULT) to show the
 verdict-evolution strip and trends.
@@ -61,17 +61,17 @@ def seed(conn) -> int:
         _ins(conn, _reading(A, "BL1860B", [4.10, 4.10, 4.09, 4.10, 4.10], t, t + 1,
                             6.0, 40), d)
 
-    # 2) Latched pack that RE-LOCKED after unlock -----------------------------
+    # 2) Locked pack that RE-LOCKED after unlock ------------------------------
     B = "1809150211AA0102"
     dbmod.upsert_battery(conn, B, alias="", owner="Client Dupont",
                          status="scrap", tags=["re-lock"], is_demo=True)
     b_before = _ins(conn, _reading(B, "BL1850B", [3.72] * 5, 26, 27, 5.0, 83,
-                                   locked=True, latched=True, frame=_frame(nyb34=1)),
+                                   locked=True, frame=_frame(nyb34=1)),
                     "2026-07-20T11:00:00")
     b_after = _ins(conn, _reading(B, "BL1850B", [3.72] * 5, 26, 27, 5.0, 83,
-                                  latched=True, frame=_frame(nyb34=0)),
+                                  frame=_frame(nyb34=0)),
                    "2026-07-20T11:04:00")
-    sid = dbmod.create_repair_session(conn, B, b_before, "SUSPECT",
+    sid = dbmod.create_repair_session(conn, B, b_before, "REPAIRABLE",
                                       started_at="2026-07-20T11:02:00", is_demo=True)
     dbmod.finish_repair_session(conn, sid, after_reading_id=b_after,
                                 override_used=True, unlocked_ok=True, held=False,
