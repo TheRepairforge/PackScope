@@ -9,6 +9,17 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [1.0.2] - 2026-09-18
+
+### Fixed
+- **False "suspect hardware" verdict on healthy BL1850B packs** (issue
+  [#13](https://github.com/TheRepairforge/PocketOBI/issues/13)). In lockstep with firmware
+  v2.1.1: the D6 marker (`0x58D`/`0x309`) that fed a "latched fault" turned out to be a
+  constant these packs always carry, not a stored fault — two healthy BL1850B units read an
+  identical `0x0B/0x49`. Balanced, unlocked BL1850B packs were being flagged SUSPECT /
+  "possible HW fix". The marker no longer affects the verdict; a genuinely locked pack is
+  still caught by its charger lock. The raw marker bytes are kept for reference only.
+
 ## [1.0.1] - 2026-09-12
 
 ### Fixed
