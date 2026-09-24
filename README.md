@@ -1,6 +1,6 @@
 <div align="center">
 
-# PackScope
+<img src="docs/packscope_logo.png" alt="PackScope" width="420">
 
 **Companion PC app for [PocketOBI](https://github.com/TheRepairforge/PocketOBI)** — read, historize and diagnose Makita LXT battery packs.
 
