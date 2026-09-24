@@ -1,4 +1,20 @@
+<div align="center">
+
 # PackScope
+
+**Companion PC app for [PocketOBI](https://github.com/TheRepairforge/PocketOBI)** — read, historize and diagnose Makita LXT battery packs.
+
+[![Release](https://img.shields.io/github/v/release/TheRepairforge/PackScope?label=release&color=2f81f7)](https://github.com/TheRepairforge/PackScope/releases)
+[![Build](https://github.com/TheRepairforge/PackScope/actions/workflows/release.yml/badge.svg)](https://github.com/TheRepairforge/PackScope/actions/workflows/release.yml)
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm--NC--1.0.0-blue)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue)](requirements.txt)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#run-it)
+
+[Status](#status) · [Run it](#run-it) · [Layout](#layout) · [Design notes](#design-notes) · [License](#license)
+
+</div>
+
+---
 
 Companion PC app for [PocketOBI](https://github.com/TheRepairforge/PocketOBI) — the standalone Makita LXT
 battery reader by The Repair Forge. PackScope reads a pack **through a
@@ -14,7 +30,9 @@ fault-classification / unlock-viability **verdict** neither of those tools has.
 Base protocol work: [Open Battery Information](https://github.com/mnh-jansson/open-battery-information)
 by Martin Jansson (MIT).
 
-## Status — v1.0.0 (first public release)
+## Status
+
+Current release: **[v1.0.2](https://github.com/TheRepairforge/PackScope/releases)** — see [CHANGELOG.md](CHANGELOG.md) for details.
 
 | Module | State |
 |---|---|
@@ -89,6 +107,8 @@ remains under the MIT license.
 
 ---
 
+<div align="center">
+
 ```
  ___         _    ___
 | _ \__ _ __| |__/ __| __ ___ _ __  ___
@@ -99,3 +119,7 @@ remains under the MIT license.
          . Know before you throw .
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 ```
+
+Built by **[The Repair Forge](https://www.youtube.com/channel/UCQL_-pcIEkrDPyljl3QPzcw)**
+
+</div>
