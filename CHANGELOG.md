@@ -9,6 +9,18 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [1.0.3] - unreleased
+
+### Changed
+- **README uses the verdict words the screen shows**: `HEALTHY` / `UNLOCK` / `POSSIBLE HW FIX` /
+  `HARDWARE FIX`, the same as PocketOBI, instead of the internal names. The "latched real fault"
+  validation note is gone: that marker was retired in 1.0.2.
+
+### Added
+- **Translation help**: [docs/TRANSLATING.md](docs/TRANSLATING.md) and a "Translation fix" issue
+  form. German and Spanish are unchecked first drafts; the review pages on
+  https://therepairforge.github.io/translate/ open the form already filled in.
+
 ## [1.0.2] - 2026-09-18
 
 ### Fixed
