@@ -43,8 +43,7 @@ Current release: **[v1.0.2](https://github.com/TheRepairforge/PackScope/releases
 | UI (Connect / Live read / History) | ✅ CustomTkinter, device dark+teal look |
 | Repair wizard (Read/Classify/Unlock/Confirm) | ✅ gated flow, DB-logged sessions |
 
-104 tests green. Validated on real hardware (BL1860B healthy, BL1850B latched real
-fault). Settings/About screens ✅. Multi-platform PyInstaller builds (Windows/Linux/macOS) ship via GitHub Actions on each release tag.
+104 tests green. Validated on real hardware (BL1860B and BL1850B packs). Settings/About screens ✅. Multi-platform PyInstaller builds (Windows/Linux/macOS) ship via GitHub Actions on each release tag.
 
 ## Run it
 
@@ -91,12 +90,19 @@ tests/           pytest suite (decode, verdict, protocol, db, config, export, de
 - **Decode source of truth is the firmware**, not `makita_lxt.py`: temperature
   is decoded as **1/10 K** (`T_C = raw/10 - 273.15`), and a sensor pinned near
   raw 2430 (≈ -30 °C) is flagged as a faulty thermistor, not a real reading.
-- **Verdict is identical to the on-device logic** so a repair decision on the
-  PC matches the standalone tool: `HEALTHY` / `REPAIRABLE` (false lock an unlock
-  clears) / `REAL_FAULT` (genuine hardware issue, unlock won't hold).
+- **Verdict is identical to the on-device logic**, in the same words as the
+  PocketOBI screen, so a repair decision on the PC matches the standalone tool:
+  `HEALTHY` / `UNLOCK` (a false lock the unlock clears) / `POSSIBLE HW FIX`
+  (a soft hint, such as a sensor spread, worth a look before unlocking) /
+  `HARDWARE FIX` (a genuine hardware fault: an unlock won't hold).
 - **No phone-home.** History is local SQLite. Sharing is manual only (a future
   "Export report (JSON)" you paste where you choose). The DB is kept
   export-ready so this stays a small addition.
+
+## Translations
+
+PackScope is in English, French, German and Spanish. German and Spanish have not been checked by
+a native speaker yet: corrections are welcome, see [docs/TRANSLATING.md](docs/TRANSLATING.md).
 
 ## License
 

@@ -1,0 +1,49 @@
+name: Translation fix
+description: Suggest a better wording for a German or Spanish string in PackScope
+title: "[XX] KEY"
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping. The review pages on https://therepairforge.github.io/translate/ show the
+        app screens and open this form already filled in. PackScope has no character or length
+        limit: accents and full words are welcome.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: Spanish
+    validations:
+      required: true
+  - type: input
+    id: key
+    attributes:
+      label: String key
+      description: The key from the review page or the spreadsheet. Leave empty for a full review.
+      placeholder: DESK_READ_PACK
+  - type: textarea
+    id: english
+    attributes:
+      label: English
+  - type: textarea
+    id: current
+    attributes:
+      label: Current translation
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Your suggestion
+      description: For a full review, attach the filled spreadsheet (CSV) here instead.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Why (optional)
+      description: Wrong meaning, unnatural, wrong register...
+  - type: input
+    id: credit
+    attributes:
+      label: Credit (optional)
+      description: The name to thank in the release notes. Leave empty to stay anonymous.
