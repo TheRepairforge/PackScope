@@ -10,7 +10,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue)](requirements.txt)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#run-it)
 
-[Status](#status) · [Run it](#run-it) · [Layout](#layout) · [Design notes](#design-notes) · [License](#license)
+[Website](https://therepairforge.github.io/packscope/) · [Status](#status) · [Run it](#run-it) · [Layout](#layout) · [Design notes](#design-notes) · [License](#license)
 
 </div>
 
@@ -32,7 +32,7 @@ by Martin Jansson (MIT).
 
 ## Status
 
-Current release: **[v1.0.2](https://github.com/TheRepairforge/PackScope/releases)** — see [CHANGELOG.md](CHANGELOG.md) for details.
+Current release: **[v1.0.3](https://github.com/TheRepairforge/PackScope/releases)** — see [CHANGELOG.md](CHANGELOG.md) for details.
 
 | Module | State |
 |---|---|
