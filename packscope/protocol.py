@@ -195,6 +195,8 @@ def unlock(bridge: BridgeClient) -> Reading:
     r = read_all(bridge, extended=False)
     if not r.valid or r.is_f0513:
         raise BridgeError("no standard pack to unlock")
+    if r.read_only:   # 14.4 V (4S): unlock not validated, never written to (#28)
+        raise BridgeError("14.4 V pack: read-only, no unlock")
 
     repaired = decode.build_repaired_frame(r.msg)
     # Writes go out once (retries=0, the BridgeClient contract): a resend after a lost

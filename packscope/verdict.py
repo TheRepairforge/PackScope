@@ -75,20 +75,20 @@ def find_hardware_fault(r: Reading) -> Tuple[HwFault, int, Optional[str]]:
     is_f0513 = r.is_f0513
 
     if not is_f0513 and r.pack_voltage > 10.0:
-        for i in range(5):
+        for i in range(r.cell_count):
             if r.cell[i] < CELL_V_SENSE:
                 return HwFault.SENSE_WIRE, i + 1, f"Resolder sense wire on group {i + 1}"
 
     # Weak / dead group: a cell genuinely below the dead floor (but not a broken sense
     # line). The [CELL_V_DEAD, CELL_V_MIN) band is a recoverable over-discharge, not a
     # hardware fault, so it does NOT land here and does NOT block the unlock.
-    for i in range(5):
+    for i in range(r.cell_count):
         if CELL_V_SENSE <= r.cell[i] < CELL_V_DEAD:
             return HwFault.WEAK_CELL, i + 1, f"Measure group {i + 1} with a DMM"
 
     if r.cell_diff > DIFF_BAD:
         lo, mn = 0, 9.0
-        for i in range(5):
+        for i in range(r.cell_count):
             if 0.1 < r.cell[i] < mn:
                 mn, lo = r.cell[i], i
         return HwFault.IMBALANCE, lo + 1, f"Group {lo + 1} low: slow-charge, recheck"
@@ -116,7 +116,7 @@ def compute_verdict(r: Reading) -> Verdict:
         return Verdict.UNKNOWN
 
     red = r.cell_diff > DIFF_BAD
-    for i in range(5):
+    for i in range(r.cell_count):
         if 0.1 < r.cell[i] < CELL_V_DEAD:      # genuinely dead cell (< 2.0 V)
             red = True
     if thermistor_fault(r):                    # pinned sensor = confirmed fault
@@ -133,7 +133,7 @@ def compute_verdict(r: Reading) -> Verdict:
     # Recoverable over-discharge: a cell below the healthy minimum but above the dead
     # floor, with no imbalance (that would have gone red above). Not a fault - it charges
     # back up - but not healthy either. Orange: a uniform ~2.2 V is recoverable.
-    for i in range(5):
+    for i in range(r.cell_count):
         if 0.1 < r.cell[i] < CELL_V_MIN:
             return Verdict.SUSPECT
     if thermistor_suspect(r):                   # sensors disagree (empirical)
@@ -150,10 +150,12 @@ _VERDICT_LABEL = {
 }
 
 
-def verdict_label(v: Verdict) -> str:
+def verdict_label(v: Verdict, read_only: bool = False) -> str:
     """On-screen wording (English canonical), matching the firmware (verdictText).
     UI code should prefer ``i18n.t(verdict_key(v))`` for the translated word; this
     stays English for tests, the health card, and any non-localised caller."""
+    if read_only and v == Verdict.REPAIRABLE:   # 14.4 V: the lock is stated, never offered (#28)
+        return "LOCKED"
     return _VERDICT_LABEL.get(v, "NO PACK")
 
 
@@ -169,7 +171,11 @@ _VERDICT_KEY = {
 }
 
 
-def verdict_key(v: Verdict) -> str:
+def verdict_key(v: Verdict, read_only: bool = False) -> str:
+    """``read_only`` (a 14.4 V pack, #28): a charger lock reads LOCKED, not UNLOCK (firmware
+    verdictText with packReadOnly())."""
+    if read_only and v == Verdict.REPAIRABLE:
+        return "S_LOCKEDV"
     return _VERDICT_KEY.get(v, "S_NO_PACK")
 
 
@@ -303,6 +309,13 @@ def diagnose(r: Reading, recently_used: bool = False) -> dict:
                  "observation": i18n.t("DESK_DIAG_NOFAULT_OBS"),
                  "cause": i18n.t("DESK_DIAG_NOFAULT_CAUSE"),
                  "check": i18n.t("DESK_DIAG_NOFAULT_CHECK")}
+    elif r.read_only:
+        # Charger-locked 14.4 V pack: the lock is a fact, the unlock is not offered (#28,
+        # firmware diagFinding packReadOnly branch).
+        f = {"color": "amber", "title": i18n.t("S_CHARGER_LOCK"),
+             "observation": i18n.t("DESK_DIAG_FALSELOCK_OBS"),
+             "cause": i18n.t("DESK_DIAG_14V_CAUSE"),
+             "check": i18n.t("DESK_DIAG_14V_CHECK")}
     else:
         f = {"color": "green", "title": i18n.t("DESK_DIAG_FALSELOCK_TITLE"),
              "observation": i18n.t("DESK_DIAG_FALSELOCK_OBS"),
@@ -316,7 +329,9 @@ def diagnose(r: Reading, recently_used: bool = False) -> dict:
         if hi > TEMP_WARM_C:
             info = i18n.t("DESK_DIAG_WARM_RU" if recently_used else "DESK_DIAG_WARM", hi=hi)
 
-    if hw != HwFault.NONE:
+    if r.read_only:
+        gate_hint = i18n.t("DESK_DIAG_14V_CHECK")
+    elif hw != HwFault.NONE:
         gate_hint = i18n.t("DESK_DIAG_GATE_FIXHW")
     elif causes:
         gate_hint = i18n.t("DESK_DIAG_GATE_UNLOCK")

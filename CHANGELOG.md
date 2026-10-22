@@ -11,6 +11,14 @@ shared protocol, decode offsets, or verdict thresholds.
 
 ## [1.0.4] - not released yet (ships with PocketOBI 2.5.1)
 
+### Added
+- **14.4 V LXT packs (BL14xx), read-only.** These 4-cell packs answer like an 18 V pack but
+  report a fifth cell at 0 V, so a healthy pack read as a broken sense wire. A pack whose model
+  starts with `BL14` is now read as 4 cells (cells, spread and verdict on four), and the unlock is
+  not offered: a charger lock shows as LOCKED with the reason. A pack whose model is not readable
+  is still treated as 5 cells. In lockstep with PocketOBI firmware 2.5.1
+  ([issue #28](https://github.com/TheRepairforge/PocketOBI/issues/28)).
+
 ### Changed
 - **Repair wizard, older (F0513) packs.** The unlock step now shows an amber caveat when the
   pack was read through the F0513 cell path: the unlock is not validated on this generation and

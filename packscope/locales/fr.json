@@ -25,6 +25,8 @@
   "DESK_CONN_WARN_LEGACY": "  ⚠ Firmware ancien (pré-contrat) : certaines lectures et verdicts peuvent manquer ou différer de cette app. Mettre à jour le firmware PocketOBI pour une parité complète.",
   "DESK_CONN_WARN_MISMATCH": "  ⚠ Protocole firmware v%s ≠ app v%s : les verdicts peuvent diverger. Mettre à jour le côté le plus ancien.",
   "DESK_CYCLES": "Cycles",
+  "DESK_DIAG_14V_CAUSE": "un pack 14,4 V (4 cellules) : lu, jamais écrit",
+  "DESK_DIAG_14V_CHECK": "le déverrouillage et la remise à zéro des erreurs ne sont pas validés sur les packs 14,4 V, ils ne sont donc pas proposés",
   "DESK_DIAG_FALSELOCK_CAUSE": "un verrouillage de protection (ex. sur-décharge déclenchée), pas un vrai défaut",
   "DESK_DIAG_FALSELOCK_CHECK": "le déblocage devrait l'effacer et tenir - charger ensuite pour confirmer",
   "DESK_DIAG_FALSELOCK_OBS": "verrou chargeur posé, mais aucun défaut matériel ni drapeau latché",

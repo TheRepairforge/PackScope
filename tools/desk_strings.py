@@ -383,6 +383,19 @@ DESK = {
         "fr": "Pack juste chargé ou utilisé (influe sur la température)",
         "de": "Akku wurde gerade geladen oder benutzt (beeinflusst die Temperatur)",
         "es": "El pack se acaba de cargar o usar (afecta a la temperatura)"},
+    # Mirror of firmware 2.5.1 (#28): a 14.4 V (4S) pack is read-only, no unlock / error reset.
+    "DESK_DIAG_14V_CAUSE": {
+        "en": 'a 14.4 V pack (4 cells): read, never written to',
+        "fr": 'un pack 14,4 V (4 cellules) : lu, jamais écrit',
+        "de": 'ein 14,4-V-Akku (4 Zellen): wird gelesen, nie beschrieben',
+        "es": 'una batería de 14,4 V (4 celdas): se lee, nunca se escribe',
+    },
+    "DESK_DIAG_14V_CHECK": {
+        "en": 'unlock and error reset are not validated on 14.4 V packs, so they are not offered',
+        "fr": 'le déverrouillage et la remise à zéro des erreurs ne sont pas validés sur les packs 14,4 V, ils ne sont donc pas proposés',
+        "de": 'Entsperren und Fehler-Reset sind bei 14,4-V-Akkus nicht validiert und werden daher nicht angeboten',
+        "es": 'el desbloqueo y el reinicio de errores no están validados en baterías de 14,4 V, por eso no se ofrecen',
+    },
     "DESK_RPR_OBSERVATION": {"en": "Observation", "fr": "Observation",
                              "de": "Beobachtung", "es": "Observación"},
     "DESK_RPR_CAUSE": {"en": "Likely cause", "fr": "Cause probable",

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Optional
 
 from . import db as dbmod
-from .models import CELL_V_MAX, CELL_V_MIN, DIFF_BAD, DIFF_WARN, Verdict
+from .models import CELL_V_MAX, CELL_V_MIN, DIFF_BAD, DIFF_WARN, Verdict, is_14v_model
 from .units import fmt_temp, human_dt
 from .verdict import verdict_label
 
@@ -41,7 +41,8 @@ def build_html(conn, serial_no: str, generated_at: Optional[str] = None,
     gen = generated_at or datetime.now().isoformat(timespec="minutes")
 
     verdict = latest["verdict"] or "UNKNOWN"
-    vlabel = verdict_label(Verdict(verdict)) if verdict in Verdict.__members__ else verdict
+    vlabel = (verdict_label(Verdict(verdict), is_14v_model(latest["model"]))
+              if verdict in Verdict.__members__ else verdict)
     vcol = _VCOL.get(verdict, "#666")
     alias = (bat["alias"] if bat and bat["alias"] else "") or latest["model"] or "?"
     owner = (bat["owner"] if bat else "") or "—"

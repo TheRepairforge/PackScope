@@ -65,6 +65,11 @@ class HwFault(str, Enum):
     THERMISTOR = "THERMISTOR"    # pinned sensor / sensors disagree
 
 
+
+def is_14v_model(model) -> bool:
+    """A 14.4 V LXT pack (4 cells) by its model string (firmware: strncmp(model, "BL14", 4))."""
+    return bool(model) and model.startswith("BL14")
+
 @dataclass
 class Reading:
     """One decoded pack reading. Mirrors the firmware `BatteryData` struct.
@@ -120,6 +125,20 @@ class Reading:
     @property
     def is_f0513(self) -> bool:
         return self.command_version == "F0513"
+
+    @property
+    def cell_count(self) -> int:
+        """4 for a 14.4 V LXT pack (model BL14xx), else 5 (firmware readStaticInfo, #28).
+
+        A 4S pack answers like an 18 V pack and reports cell 5 as exactly 0. A silent
+        model ("LXT ?") stays 5S, so a 5S pack with a broken cell-5 sense line still reads
+        as one."""
+        return 4 if is_14v_model(self.model) else 5
+
+    @property
+    def read_only(self) -> bool:
+        """14.4 V pack: read and diagnose only, no unlock / error reset (firmware packReadOnly)."""
+        return self.cell_count == 4
 
     @property
     def rom_hex(self) -> str:

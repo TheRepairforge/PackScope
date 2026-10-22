@@ -23,7 +23,7 @@ from .. import demo_history
 from .. import healthcard
 from .. import report
 from ..i18n import t
-from ..models import Verdict
+from ..models import Verdict, is_14v_model
 from ..units import fmt_temp, human_dt
 from ..verdict import verdict_key
 from . import theme
@@ -216,7 +216,7 @@ class HistoryFrame(ctk.CTkFrame):
         ctk.CTkLabel(card, text=row["serial_no"], font=self.app.f_mono,
                      text_color=theme.MUTED, anchor="w").grid(
             row=1, column=0, sticky="w", padx=12, pady=(0, 9))
-        StatusBadge(card, self.app, t(verdict_key(v)), verdict_kind(v)).grid(
+        StatusBadge(card, self.app, t(verdict_key(v, is_14v_model(row["model"]))), verdict_kind(v)).grid(
             row=0, column=1, rowspan=2, padx=(0, 10))
         for wdg in card.winfo_children() + [card]:
             wdg.bind("<Button-1>", lambda e, s=row["serial_no"]: self._select(s))
@@ -254,7 +254,7 @@ class HistoryFrame(ctk.CTkFrame):
         title = (bat["alias"] if bat and bat["alias"] else latest["model"]) or "?"
         ctk.CTkLabel(head, text=title, font=self.app.f_model,
                      text_color=theme.TEXT).grid(row=0, column=0, sticky="w")
-        StatusBadge(head, self.app, t(verdict_key(v)), verdict_kind(v)).grid(
+        StatusBadge(head, self.app, t(verdict_key(v, is_14v_model(latest["model"]))), verdict_kind(v)).grid(
             row=0, column=1, sticky="e")
         ctk.CTkLabel(d, text=f"{latest['model']} · S/N {self.selected_serial}",
                      font=self.app.f_mono, text_color=theme.MUTED).grid(
@@ -367,7 +367,7 @@ class HistoryFrame(ctk.CTkFrame):
         ctk.CTkLabel(row, text=f"{(rd['pack_voltage_mv'] or 0)/1000:.2f} V",
                      font=self.app.f_small, text_color=theme.TEXT, width=70,
                      anchor="w").grid(row=0, column=1, sticky="w", padx=8)
-        StatusBadge(row, self.app, t(verdict_key(v)), verdict_kind(v)).grid(
+        StatusBadge(row, self.app, t(verdict_key(v, is_14v_model(rd["model"]))), verdict_kind(v)).grid(
             row=0, column=3, sticky="e")
         for wdg in row.winfo_children() + [row]:
             wdg.bind("<Button-1>", lambda e, rid=rd["id"]: self._open_reading(rid))

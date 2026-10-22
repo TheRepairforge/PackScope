@@ -20,7 +20,7 @@ from .components import StatusBadge, StepIndicator
 
 
 def _find_color(key):
-    return {"red": theme.RED, "orange": theme.ORANGE,
+    return {"red": theme.RED, "orange": theme.ORANGE, "amber": theme.AMBER,
             "green": theme.GREEN}.get(key, theme.TEXT)
 
 
@@ -83,7 +83,7 @@ class RepairFrame(ctk.CTkFrame):
         temp = ("" if not r.board_temp_valid   # single-sensor read: no 2nd temp to spread against
                 else f"  ·  {t('DESK_TEMP_SPREAD')} {abs(r.temp_mosfet - r.temp_cell):.0f} °C")
         return (f"{r.model}  ·  {r.pack_voltage:.2f} V  ·  {t('DESK_CELL_SPREAD')} "
-                f"{r.cell_diff:.2f} V{temp}  ·  {lock}  ·  {t(verdict_key(v))}")
+                f"{r.cell_diff:.2f} V{temp}  ·  {lock}  ·  {t(verdict_key(v, r.read_only))}")
 
     def _need_bridge(self):
         if self.app.bridge is None:
@@ -170,7 +170,7 @@ class RepairFrame(ctk.CTkFrame):
                               border_width=1, border_color=col)
         banner.grid(row=1, column=0, columnspan=2, sticky="ew", padx=16, pady=8)
         banner.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(banner, text=t(verdict_key(v)), font=self.app.f_body,
+        ctk.CTkLabel(banner, text=t(verdict_key(v, r.read_only)), font=self.app.f_body,
                      text_color=col).grid(row=0, column=0, sticky="w", padx=14, pady=10)
 
         # context toggle: was the pack just charged / used?
@@ -215,9 +215,15 @@ class RepairFrame(ctk.CTkFrame):
         # SUSPECT (latched / spread) does NOT block. No lock at all -> nothing to do.
         self._gate_hw = d["hw_fault"] != HwFault.NONE
         self._gate_has_lock = bool(d["charger_lock"]) or r.locked
+        self._gate_ro = r.read_only            # 14.4 V: no write at all, no override (#28)
         self.override_var = ctk.BooleanVar(value=False)
         row = 7
-        if self._gate_hw:
+        if self._gate_ro:
+            ctk.CTkLabel(content, text=d["gate_hint"], font=self.app.f_small,
+                         text_color=theme.AMBER).grid(row=row, column=0, columnspan=2,
+                                                      sticky="w", padx=16, pady=(8, 4))
+            row += 1
+        elif self._gate_hw:
             ctk.CTkCheckBox(content, text=t("DESK_RPR_OVERRIDE"),
                             variable=self.override_var, font=self.app.f_small,
                             command=self._refresh_next, fg_color=theme.RED,
@@ -242,7 +248,9 @@ class RepairFrame(ctk.CTkFrame):
         self._refresh_next()
 
     def _refresh_next(self):
-        if self._gate_hw:
+        if self._gate_ro:
+            allow = False
+        elif self._gate_hw:
             allow = self.override_var.get()
         else:
             allow = self._gate_has_lock

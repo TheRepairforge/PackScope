@@ -25,6 +25,8 @@
   "DESK_CONN_WARN_LEGACY": "  ⚠ Older firmware (pre-contract): some readings and verdicts may be missing or differ from this app. Update the PocketOBI firmware for full parity.",
   "DESK_CONN_WARN_MISMATCH": "  ⚠ Firmware protocol v%s ≠ app v%s: verdicts may diverge. Update whichever side is older.",
   "DESK_CYCLES": "Cycles",
+  "DESK_DIAG_14V_CAUSE": "a 14.4 V pack (4 cells): read, never written to",
+  "DESK_DIAG_14V_CHECK": "unlock and error reset are not validated on 14.4 V packs, so they are not offered",
   "DESK_DIAG_FALSELOCK_CAUSE": "a protection lockout (e.g. tripped over-discharge), not a real fault",
   "DESK_DIAG_FALSELOCK_CHECK": "the unlock should clear it and hold - charge afterwards to confirm",
   "DESK_DIAG_FALSELOCK_OBS": "charger lock set, but no hardware fault and no latched flag",

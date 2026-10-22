@@ -25,6 +25,8 @@
   "DESK_CONN_WARN_LEGACY": "  ⚠ Firmware antiguo (pre-contrato): algunas lecturas y veredictos pueden faltar o diferir de esta app. Actualizar el firmware del PocketOBI para plena paridad.",
   "DESK_CONN_WARN_MISMATCH": "  ⚠ Protocolo de firmware v%s ≠ app v%s: los veredictos pueden diferir. Actualizar el lado más antiguo.",
   "DESK_CYCLES": "Ciclos",
+  "DESK_DIAG_14V_CAUSE": "una batería de 14,4 V (4 celdas): se lee, nunca se escribe",
+  "DESK_DIAG_14V_CHECK": "el desbloqueo y el reinicio de errores no están validados en baterías de 14,4 V, por eso no se ofrecen",
   "DESK_DIAG_FALSELOCK_CAUSE": "un bloqueo de protección (p. ej. sobredescarga activada), no un fallo real",
   "DESK_DIAG_FALSELOCK_CHECK": "el desbloqueo debería borrarlo y aguantar - cargar después para confirmar",
   "DESK_DIAG_FALSELOCK_OBS": "bloqueo de cargador puesto, pero sin fallo de hardware ni flag memorizado",

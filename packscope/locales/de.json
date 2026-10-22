@@ -25,6 +25,8 @@
   "DESK_CONN_WARN_LEGACY": "  ⚠ Ältere Firmware (vor Vertrag): einige Messwerte und Urteile können fehlen oder von dieser App abweichen. Firmware des PocketOBI für volle Parität aktualisieren.",
   "DESK_CONN_WARN_MISMATCH": "  ⚠ Firmware-Protokoll v%s ≠ App v%s: Urteile können abweichen. Die ältere Seite aktualisieren.",
   "DESK_CYCLES": "Zyklen",
+  "DESK_DIAG_14V_CAUSE": "ein 14,4-V-Akku (4 Zellen): wird gelesen, nie beschrieben",
+  "DESK_DIAG_14V_CHECK": "Entsperren und Fehler-Reset sind bei 14,4-V-Akkus nicht validiert und werden daher nicht angeboten",
   "DESK_DIAG_FALSELOCK_CAUSE": "eine Schutzsperre (z. B. ausgelöste Tiefentladung), kein echter Fehler",
   "DESK_DIAG_FALSELOCK_CHECK": "das Entsperren sollte sie löschen und halten - danach laden zur Bestätigung",
   "DESK_DIAG_FALSELOCK_OBS": "Ladesperre gesetzt, aber kein Hardware-Fehler und kein gespeichertes Flag",

@@ -273,7 +273,7 @@ class LiveReadFrame(ctk.CTkFrame):
         self.reading = r
         v = compute_verdict(r)
         self.l_model.configure(text=r.model or "—")
-        self.badge.set(t(verdict_key(v)), verdict_kind(v))
+        self.badge.set(t(verdict_key(v, r.read_only)), verdict_kind(v))
         self.l_sn.configure(text=f"{t('S_SN')} {r.serial_no or '—'}")
         self.l_packv.configure(text=f"{r.pack_voltage:.2f} V")
         cells_n = len(r.cell)
@@ -332,7 +332,7 @@ class LiveReadFrame(ctk.CTkFrame):
         self.l_produced.configure(text=txt)
 
         self.cells.set_reading(r)
-        self.banner.show(v, t(verdict_key(v)), verdict_reason(r))
+        self.banner.show(v, t(verdict_key(v, r.read_only)), verdict_reason(r))
         self.save_btn.configure(state="normal")
 
     def on_show(self):

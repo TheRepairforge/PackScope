@@ -276,3 +276,45 @@ def test_unlock_writes_are_sent_once():
         bytes([0xCC, 0xF0]), bytes([0x33, 0x0F]), bytes([0x33, 0x55]),
         bytes([0x33, 0xD9]), bytes([0x33, 0xDA]), bytes([0xCC, 0xD9])]
     assert all(n == 0 for _, n in seq)
+
+
+# ---- 14.4 V LXT packs (#28): 4S, cell 5 reads 0, read-only (mirror of firmware 2.5.1) ----
+def _bl1415n(locked=False):
+    msg = bytearray(32)
+    if locked:
+        msg[20] = 0x03                     # locked nibble
+    bridge = FakeBridge()
+    bridge.add(protocol.MODEL_CMD, b"BL1415N" + b"\x00" * 9)
+    bridge.add(protocol.READ_DATA_CMD, build_live(15820, [3950, 3960, 3950, 3960, 0], 2995, 2990))
+    bridge.add(protocol.READ_MSG_CMD, build_msg_resp("0F051E64320209BF", msg))
+    return bridge
+
+
+def test_bl14_reads_as_four_cells_and_healthy():
+    r = protocol.read_all(_bl1415n())
+    assert r.cell_count == 4 and r.read_only
+    assert len(r.cell) == 4                 # cell 5 (0 V) is not a cell on a 4S pack
+    assert r.cell_diff == pytest.approx(0.01, abs=1e-3)
+    assert compute_verdict(r) == Verdict.HEALTHY   # was a sense-wire REAL_FAULT on 5 cells
+
+
+def test_bl18_with_cell5_at_zero_is_still_a_fault():
+    # Same live data on an 18 V model: a 0 V cell 5 is a broken sense line, not a 4S pack.
+    bridge = _bl1415n()
+    bridge.add(protocol.MODEL_CMD, b"BL1815N" + b"\x00" * 9)
+    r = protocol.read_all(bridge)
+    assert r.cell_count == 5 and not r.read_only
+    assert compute_verdict(r) == Verdict.REAL_FAULT
+
+
+def test_bl14_locked_is_stated_never_unlocked():
+    from packscope.verdict import verdict_key, verdict_label
+    bridge = _bl1415n(locked=True)
+    r = protocol.read_all(bridge)
+    v = compute_verdict(r)
+    assert v == Verdict.REPAIRABLE
+    assert verdict_key(v, r.read_only) == "S_LOCKEDV" and verdict_label(v, True) == "LOCKED"
+    bridge.sent.clear()
+    with pytest.raises(protocol.BridgeError):
+        protocol.unlock(bridge)
+    assert protocol.ARM_CMD not in bridge.sent and protocol.RESET_ERROR_CMD not in bridge.sent

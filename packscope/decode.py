@@ -230,7 +230,7 @@ def apply_live_standard(r: Reading, payload: Sequence[int]) -> None:
     """Decode the standard live-data payload into ``r`` (ino: readLiveData, standard path)."""
     p = payload
     r.pack_voltage = le16(p, 0) / 1000.0
-    r.cell = [le16(p, 2 + 2 * i) / 1000.0 for i in range(5)]
+    r.cell = [le16(p, 2 + 2 * i) / 1000.0 for i in range(r.cell_count)]   # 4 on a 14.4 V pack (#28)
     r.cell_diff = max(r.cell) - min(r.cell)
     # Temperature is 1/10 K: T_C = raw/10 - 273.15 (ino: readLiveData). Confirmed on
     # real packs; a dead thermistor pins near raw 2430 (= -30 C).
@@ -246,7 +246,7 @@ def apply_live_f0513(r: Reading, cells_raw: Sequence[int], temp_raw: int) -> Non
     whose D7 read is silent. ``cells_raw`` is the 5 per-cell u16 values (mV),
     ``temp_raw`` the raw cell-temperature u16.
     """
-    r.cell = [cells_raw[i] / 1000.0 for i in range(5)]
+    r.cell = [cells_raw[i] / 1000.0 for i in range(r.cell_count)]   # 4 on a 14.4 V pack (#28)
     r.pack_voltage = sum(r.cell)
     r.cell_diff = max(r.cell) - min(r.cell)
     # Same 1/10 K encoding as the standard path (ino: readF0513Cells). Confirmed on a
