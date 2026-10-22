@@ -9,7 +9,7 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
-## [1.0.4] - not released yet (ships with PocketOBI 2.5.1)
+## [1.0.4] - 2026-10-22
 
 ### Added
 - **14.4 V LXT packs (BL14xx), read-only.** These 4-cell packs answer like an 18 V pack but
