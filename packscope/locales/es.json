@@ -140,6 +140,7 @@
   "DESK_RPR_BASELINE": "Lectura de referencia: %s",
   "DESK_RPR_CAUSE": "Causa probable",
   "DESK_RPR_CHECK": "Comprobación",
+  "DESK_RPR_F0513_UNVALIDATED": "Generación antigua (F0513): el desbloqueo no está validado en este BMS y el pack puede seguir bloqueado. Puede intentarlo de todos modos.",
   "DESK_RPR_HELD": "aguantó",
   "DESK_RPR_HOLD_Q": "¿Aguantó tras cargar? (opcional)",
   "DESK_RPR_LOCKED": "bloqueado",

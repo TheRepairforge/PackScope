@@ -32,7 +32,7 @@ by Martin Jansson (MIT).
 
 ## Status
 
-Current release: **[v1.0.3](https://github.com/TheRepairforge/PackScope/releases)** — see [CHANGELOG.md](CHANGELOG.md) for details.
+Current release: **[v1.0.4](https://github.com/TheRepairforge/PackScope/releases)** — see [CHANGELOG.md](CHANGELOG.md) for details.
 
 | Module | State |
 |---|---|

@@ -9,6 +9,21 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [1.0.4] - not released yet (ships with PocketOBI 2.5.1)
+
+### Changed
+- **Repair wizard, older (F0513) packs.** The unlock step now shows an amber caveat when the
+  pack was read through the F0513 cell path: the unlock is not validated on this generation and
+  the pack may read still locked. The Unlock button stays available (you can still try); a pure
+  F0513 pack is still refused, and a newer pack is unchanged. In lockstep with PocketOBI firmware
+  2.5.1, keyed on the same condition, after bench evidence that the frame write does nothing on an
+  F0513-generation BMS ([discussion #27](https://github.com/TheRepairforge/PocketOBI/discussions/27)).
+
+### Fixed
+- **Unlock commands are sent once.** The arm, frame write, store and error-reset commands of the
+  unlock no longer go through the serial link's automatic resend: after a lost reply, a resend
+  could apply a write twice or send the frame after the arm was already used.
+
 ## [1.0.3] - 2026-10-08
 
 ### Changed

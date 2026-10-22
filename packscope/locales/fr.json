@@ -140,6 +140,7 @@
   "DESK_RPR_BASELINE": "Lecture de référence : %s",
   "DESK_RPR_CAUSE": "Cause probable",
   "DESK_RPR_CHECK": "Vérification",
+  "DESK_RPR_F0513_UNVALIDATED": "Génération ancienne (F0513) : le déverrouillage n'est pas validé sur ce BMS et le pack peut rester verrouillé. Vous pouvez tout de même essayer.",
   "DESK_RPR_HELD": "tenu",
   "DESK_RPR_HOLD_Q": "A-t-il tenu après charge ? (facultatif)",
   "DESK_RPR_LOCKED": "verrouillé",

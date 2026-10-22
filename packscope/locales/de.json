@@ -140,6 +140,7 @@
   "DESK_RPR_BASELINE": "Basismessung: %s",
   "DESK_RPR_CAUSE": "Mögl. Ursache",
   "DESK_RPR_CHECK": "Prüfung",
+  "DESK_RPR_F0513_UNVALIDATED": "Ältere Generation (F0513): Das Entsperren ist auf diesem BMS nicht validiert, der Akku kann weiterhin gesperrt erscheinen. Sie können es trotzdem versuchen.",
   "DESK_RPR_HELD": "gehalten",
   "DESK_RPR_HOLD_Q": "Hat es nach dem Laden gehalten? (optional)",
   "DESK_RPR_LOCKED": "gesperrt",

@@ -197,13 +197,15 @@ def unlock(bridge: BridgeClient) -> Reading:
         raise BridgeError("no standard pack to unlock")
 
     repaired = decode.build_repaired_frame(r.msg)
-    bridge.transaction(ARM_CMD)                 # arm the charger-write
-    bridge.transaction(_frame_write_cmd(repaired))
-    bridge.transaction(STORE_CMD)               # store / commit
+    # Writes go out once (retries=0, the BridgeClient contract): a resend after a lost
+    # echo could apply a write twice, or re-send the frame after the arm was consumed.
+    bridge.transaction(ARM_CMD, retries=0)                  # arm the charger-write
+    bridge.transaction(_frame_write_cmd(repaired), retries=0)
+    bridge.transaction(STORE_CMD, retries=0)                # store / commit
     # Full error reset (TESTMODE -> RESET_ERROR -> TESTMODE exit).
-    bridge.transaction(TESTMODE_CMD)
-    bridge.transaction(RESET_ERROR_CMD)
-    bridge.transaction(TESTMODE_EXIT_CMD)
+    bridge.transaction(TESTMODE_CMD, retries=0)
+    bridge.transaction(RESET_ERROR_CMD, retries=0)
+    bridge.transaction(TESTMODE_EXIT_CMD, retries=0)
 
     return read_all(bridge, extended=True)      # verify
 

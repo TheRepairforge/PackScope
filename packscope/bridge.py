@@ -27,7 +27,8 @@ class BridgeError(Exception):
 class BridgeClient(Protocol):
     """A transport that runs one ArduinoOBI command frame and returns its
     payload. Implementations must validate the echoed command byte and return
-    exactly ``rsp_len`` payload bytes (the count the firmware echoes back)."""
+    exactly ``rsp_len`` payload bytes (the count the firmware echoes back). A command that
+    WRITES must be sent with ``retries=0``: a resend after a timeout could apply the write twice."""
 
     def transaction(self, frame: bytes, retries: int = 0) -> bytes:
         ...

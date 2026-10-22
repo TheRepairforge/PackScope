@@ -260,10 +260,22 @@ class RepairFrame(ctk.CTkFrame):
         ctk.CTkLabel(self.content, justify="left", wraplength=720, font=self.app.f_small,
                      text_color=theme.MUTED, text=t("DESK_RPR_S3_DESC")).grid(
             row=1, column=0, sticky="w", padx=16, pady=(0, 8))
+        row = 2
+        # Mirror the firmware 2.5.1 caveat (display.cpp drawConfirmUnlock, !bat.boardTempValid):
+        # on a pack read through the F0513 cell path (board_temp_valid False — the old
+        # generation that answers the static frame but is silent on the D7 live read) the frame
+        # write was seen not to take on the bench. Keep the button available (warn, do not
+        # block); protocol.unlock() still refuses a PURE F0513 (is_f0513), this only flags the
+        # hybrid so the screen does not imply a write that holds.
+        if self.before is not None and not self.before.board_temp_valid:
+            ctk.CTkLabel(self.content, justify="left", wraplength=720, font=self.app.f_small,
+                         text_color=theme.AMBER, text=t("DESK_RPR_F0513_UNVALIDATED")).grid(
+                row=row, column=0, sticky="w", padx=16, pady=(0, 8))
+            row += 1
         self.unlock_btn = ctk.CTkButton(
             self.content, text=t("DESK_RPR_UNLOCK_NOW"), font=self.app.f_body, fg_color=theme.AMBER,
             hover_color="#f0c95a", text_color="#2a2312", command=self._do_unlock)
-        self.unlock_btn.grid(row=2, column=0, sticky="w", padx=16, pady=14)
+        self.unlock_btn.grid(row=row, column=0, sticky="w", padx=16, pady=14)
 
     def _do_unlock(self):
         if not self._need_bridge():

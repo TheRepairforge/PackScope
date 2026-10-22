@@ -388,6 +388,17 @@ DESK = {
     "DESK_RPR_CAUSE": {"en": "Likely cause", "fr": "Cause probable",
                        "de": "Mögl. Ursache", "es": "Causa probable"},
     "DESK_RPR_CHECK": {"en": "Check", "fr": "Vérification", "de": "Prüfung", "es": "Comprobación"},
+    # Mirror of firmware 2.5.1 (S_W_F0513_UNVALIDATED): shown on the unlock step when the pack
+    # was read via the F0513 cell path (board_temp_valid False). Honest caveat, button kept.
+    "DESK_RPR_F0513_UNVALIDATED": {
+        "en": "Older (F0513) generation: the unlock is not validated on this BMS and the pack "
+              "may read still locked. You can still try.",
+        "fr": "Génération ancienne (F0513) : le déverrouillage n'est pas validé sur ce BMS et le "
+              "pack peut rester verrouillé. Vous pouvez tout de même essayer.",
+        "de": "Ältere Generation (F0513): Das Entsperren ist auf diesem BMS nicht validiert, der "
+              "Akku kann weiterhin gesperrt erscheinen. Sie können es trotzdem versuchen.",
+        "es": "Generación antigua (F0513): el desbloqueo no está validado en este BMS y el pack "
+              "puede seguir bloqueado. Puede intentarlo de todos modos."},
     "DESK_RPR_OVERRIDE": {
         "en": "Override: unlock anyway (fix the hardware first)",
         "fr": "Forcer : débloquer quand même (réparer d'abord le matériel)",

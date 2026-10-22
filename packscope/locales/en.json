@@ -140,6 +140,7 @@
   "DESK_RPR_BASELINE": "Baseline read: %s",
   "DESK_RPR_CAUSE": "Likely cause",
   "DESK_RPR_CHECK": "Check",
+  "DESK_RPR_F0513_UNVALIDATED": "Older (F0513) generation: the unlock is not validated on this BMS and the pack may read still locked. You can still try.",
   "DESK_RPR_HELD": "held",
   "DESK_RPR_HOLD_Q": "Did it hold after charging? (optional)",
   "DESK_RPR_LOCKED": "locked",

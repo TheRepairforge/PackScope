@@ -242,3 +242,37 @@ def test_read_contract_legacy_firmware_all_none():
     bridge = FakeBridge(default_ff=False)
     c = protocol.read_contract(bridge)
     assert c == protocol.Contract(None, None, None)
+
+
+class _RetryRecordingBridge(FakeBridge):
+    """FakeBridge that also records the ``retries`` each frame was sent with. Its default
+    mirrors SerialBridge (retries=2), so a write that forgets ``retries=0`` shows up."""
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.retries = []
+
+    def transaction(self, frame, retries=2):
+        self.retries.append((bytes(frame), retries))
+        return super().transaction(frame, retries)
+
+
+def test_unlock_writes_are_sent_once():
+    # A resend after a lost echo could apply a write twice, or re-send the frame after the
+    # arm was consumed: every write of the unlock sequence goes out with retries=0.
+    msg = bytearray(32)
+    msg[20] = 0x03                         # locked nibble
+    bridge = _RetryRecordingBridge()
+    bridge.add(protocol.MODEL_CMD, b"BL1850B" + b"\x00" * 9)
+    bridge.add(protocol.READ_DATA_CMD, build_live(18570, [3720] * 5, 2992, 3002))
+    bridge.add(protocol.READ_MSG_CMD, build_msg_resp("1809150211AA0102", msg))
+
+    protocol.unlock(bridge)
+
+    frames = [f for f, _ in bridge.retries]
+    seq = bridge.retries[frames.index(protocol.ARM_CMD):frames.index(protocol.TESTMODE_EXIT_CMD) + 1]
+    # arm, frame write, store, testmode, reset error, testmode exit (in that order)
+    assert [f[3:5] for f, _ in seq] == [
+        bytes([0xCC, 0xF0]), bytes([0x33, 0x0F]), bytes([0x33, 0x55]),
+        bytes([0x33, 0xD9]), bytes([0x33, 0xDA]), bytes([0xCC, 0xD9])]
+    assert all(n == 0 for _, n in seq)
