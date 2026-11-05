@@ -114,9 +114,9 @@ class App(ctk.CTk):
         config.save_settings(self.settings)
         i18n.set_language(new_lang)
         theme.set_language(i18n.current())
-        for f in (self.f_brand, self.f_nav, self.f_title, self.f_body, self.f_small, self.f_label,
-                  self.f_badge, self.f_model, self.f_packv, self.f_stat, self.f_big):
-            f.configure(family=theme.FONT_FAMILY)
+        for name, f in vars(self).items():               # every UI font but the monospace one
+            if name.startswith("f_") and name != "f_mono" and isinstance(f, ctk.CTkFont):
+                f.configure(family=theme.FONT_FAMILY)
         for w in list(self.grid_slaves()):
             w.destroy()
         self._build_ui()
