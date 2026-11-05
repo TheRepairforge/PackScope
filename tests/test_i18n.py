@@ -103,3 +103,32 @@ def test_verdict_key_matches_english_label():
     i18n.set_language("en")
     for v in Verdict:
         assert i18n.t(verdict_key(v)) == verdict_label(v)
+
+
+def test_asia_catalogs_take_the_firmware_wording():
+    # S_* keys come verbatim from the firmware's native-reviewed columns (D70/D72, #35).
+    fw = Path(i18n.__file__).resolve().parents[2] / "PocketOBI" / "strings_ja.h"
+    i18n.set_language("ja")
+    assert i18n.t("S_BATTERY") == "バッテリー"
+    if fw.exists():
+        assert '"バッテリー"' in fw.read_text(encoding="utf-8")
+    i18n.set_language("zh_tw")
+    assert i18n.current() == "zh_tw"
+    i18n.set_language("en")
+
+
+def test_vietnamese_has_its_diacritics_back():
+    # The firmware's VI is ASCII (device font); the Desk restores the accents.
+    i18n.set_language("vi")
+    assert i18n.t("S_LANGUAGE") == "Ngôn ngữ"
+    i18n.set_language("en")
+
+
+def test_placeholders_match_english_in_every_language():
+    import re
+    ph = re.compile(r"%[-0-9.]*[dsfX]|\{[a-z_]+(?::[^}]*)?\}")
+    en = _cat("en")
+    for lang in i18n.LANGS:
+        cat = _cat(lang)
+        for k, v in en.items():
+            assert sorted(ph.findall(cat[k])) == sorted(ph.findall(v)), f"{lang} {k}"

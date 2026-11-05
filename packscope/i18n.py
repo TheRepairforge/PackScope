@@ -1,8 +1,9 @@
 """Tiny runtime translation layer for the Desk UI.
 
-Catalogs live in ``locales/{en,fr,de,es}.json`` and are GENERATED from the firmware
+Catalogs live in ``locales/<lang>.json``. EN/FR/DE/ES are GENERATED from the firmware
 STRTAB by ``tools/gen_locales.py`` (the firmware is the canonical source — see that
-script). This module just loads them and resolves a key at call time:
+script); JA/KO/ZH/ZH_TW/VI by ``tools/gen_locales_asia.py`` from the firmware's Asia
+columns plus ``tools/desk_strings_asia.py``. This module just loads them and resolves a key at call time:
 
     from .. import i18n
     i18n.set_language("fr")
@@ -22,7 +23,7 @@ import json
 from pathlib import Path
 from typing import Dict
 
-LANGS = ("en", "fr", "de", "es")
+LANGS = ("en", "fr", "de", "es", "ja", "ko", "zh", "zh_tw", "vi")
 DEFAULT = "en"
 
 _LOCALES_DIR = Path(__file__).resolve().parent / "locales"

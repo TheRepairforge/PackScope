@@ -16,7 +16,9 @@ from .components import SectionHeader, divider
 # (below) from i18n.t() at construction time.
 _UNIT = {"°C": "C", "°F": "F"}
 _UNIT_INV = {v: k for k, v in _UNIT.items()}
-_LANG = {"EN": "en", "FR": "fr", "DE": "de", "ES": "es"}
+# Each language is listed in its own name, so a user lost in the wrong one still finds theirs.
+_LANG = {"English": "en", "Français": "fr", "Deutsch": "de", "Español": "es", "日本語": "ja",
+         "한국어": "ko", "简体中文": "zh", "繁體中文": "zh_tw", "Tiếng Việt": "vi"}
 _LANG_INV = {v: k for k, v in _LANG.items()}
 
 
@@ -48,10 +50,10 @@ class SettingsFrame(ctk.CTkFrame):
             unselected_color=theme.PANEL2,
             command=lambda v: self.after(10, lambda: self.app.apply_appearance(self._appear[v])))
         self.seg_appear.grid(row=0, column=1, sticky="e")
-        self.seg_lang = ctk.CTkSegmentedButton(
-            self._line(card, t("S_LANGUAGE")), values=list(_LANG),
-            font=app.f_small, fg_color=theme.PANEL2, selected_color=theme.ACCENT_DIM, text_color=theme.TEXT,
-            unselected_color=theme.PANEL2,
+        self.seg_lang = ctk.CTkOptionMenu(
+            self._line(card, t("S_LANGUAGE")), width=160, values=list(_LANG),
+            font=app.f_small, fg_color=theme.PANEL2, button_color=theme.BORDER2, text_color=theme.TEXT,
+            dropdown_font=app.f_small, dropdown_fg_color=theme.PANEL2, dropdown_text_color=theme.TEXT,
             command=lambda v: self.after(10, lambda: self.app.apply_language(_LANG[v])))
         self.seg_lang.grid(row=0, column=1, sticky="e")
         self.seg_unit = ctk.CTkSegmentedButton(
@@ -118,7 +120,7 @@ class SettingsFrame(ctk.CTkFrame):
     def on_show(self):
         s = self.app.settings
         self.seg_appear.set(self._appear_inv.get(s.appearance, t("DESK_SET_DARK")))
-        self.seg_lang.set(_LANG_INV.get(i18n.current(), "EN"))
+        self.seg_lang.set(_LANG_INV.get(i18n.current(), "English"))
         self.seg_unit.set(_UNIT_INV.get(s.temp_unit, "°C"))
         self.seg_csv.set(self._csv_inv.get(s.csv_columns, t("DESK_SET_CSV_FULL")))
         self.port.delete(0, "end")

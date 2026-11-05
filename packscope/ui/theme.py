@@ -19,6 +19,19 @@ from ..models import (
 FONT_FAMILY = "Segoe UI"
 MONO_FAMILY = "Consolas"
 
+# Segoe UI has no CJK: Tk would fall back glyph by glyph to whatever font it finds, and Han
+# characters then take another language's forms (a Japanese font for Chinese text). So a CJK
+# language names its own Windows UI font. Elsewhere the system fallback already picks by locale.
+_UI_FAMILY = {"ja": "Yu Gothic UI", "ko": "Malgun Gothic", "zh": "Microsoft YaHei UI",
+              "zh_tw": "Microsoft JhengHei UI"}
+
+
+def set_language(lang: str) -> None:
+    """Point FONT_FAMILY at the UI font for ``lang`` (Windows only; Segoe UI otherwise)."""
+    global FONT_FAMILY
+    import sys
+    FONT_FAMILY = _UI_FAMILY.get(lang, "Segoe UI") if sys.platform == "win32" else "Segoe UI"
+
 # Four deliberate surface levels: page < sidebar < card < inner section.
 _DARK = dict(
     BG="#0B1017", SIDEBAR="#111A24", PANEL="#151E29", PANEL2="#1B2735",

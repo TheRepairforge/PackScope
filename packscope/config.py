@@ -59,7 +59,7 @@ class Settings:
 
     serial_port: str = ""            # default port, "" = ask each time
     temp_unit: str = "C"             # "C" or "F"
-    language: str = "en"             # "en"/"fr"/"de"/"es" (JP: default EN)
+    language: str = "en"             # an i18n.LANGS code (JP: default EN)
     appearance: str = "dark"         # "dark" (default) or "light"
     csv_columns: str = "full"        # "makita" (compat) or "full"
     db_path: str = ""                # "" = default_db_path()

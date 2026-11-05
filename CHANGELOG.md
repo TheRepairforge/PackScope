@@ -9,6 +9,20 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [1.1.0] - not released yet
+
+### Added
+- **Japanese, Korean, Simplified Chinese, Traditional Chinese and Vietnamese.** Settings now picks
+  the language from a list, each written in its own name. The wording shared with the PocketOBI
+  screen comes from the firmware (Japanese reviewed by a native speaker in
+  [PocketOBI #35](https://github.com/TheRepairforge/PocketOBI/pull/35), Chinese written by native
+  users in [#29](https://github.com/TheRepairforge/PocketOBI/issues/29) and
+  [#38](https://github.com/TheRepairforge/PocketOBI/issues/38)); Vietnamese gets its accents back,
+  which the device font cannot draw. The app-only text is our own translation, not yet reviewed
+  by a native speaker: corrections are welcome.
+- On Windows each of these languages uses its own system UI font, so Chinese characters keep
+  their Chinese forms and Japanese its Japanese ones.
+
 ## [1.0.4] - 2026-10-22
 
 ### Added
