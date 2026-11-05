@@ -9,7 +9,7 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
-## [1.1.0] - not released yet
+## [1.1.0] - 2026-11-05
 
 ### Added
 - **Japanese, Korean, Simplified Chinese, Traditional Chinese and Vietnamese.** Settings now picks
