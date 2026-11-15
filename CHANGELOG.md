@@ -9,7 +9,7 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
-## [Unreleased]
+## [1.2.0] - 2026-11-15
 
 ### Added
 - **Polish.** The app-only text starts from a user's draft
