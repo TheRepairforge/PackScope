@@ -9,6 +9,14 @@ The verdict/decode logic here is a 1:1 port of the PocketOBI firmware
 below are kept in sync with the firmware `CHANGELOG.md` when a change touches the
 shared protocol, decode offsets, or verdict thresholds.
 
+## [Unreleased]
+
+### Added
+- **Polish.** The app-only text starts from a user's draft
+  ([#2](https://github.com/TheRepairforge/PackScope/issues/2), thanks!), completed by us; the
+  words shared with the PocketOBI screen come from the firmware's Polish (PocketOBI 2.8.0).
+  **Provisional:** a review by a native speaker is wanted.
+
 ## [1.1.0] - 2026-11-05
 
 ### Added

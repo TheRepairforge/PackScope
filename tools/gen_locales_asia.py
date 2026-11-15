@@ -1,4 +1,7 @@
-"""Generate the Desk's Asia catalogs (ja, ko, zh, zh_tw, vi) next to the EN/FR/DE/ES ones.
+"""Generate the Desk's Asia catalogs (ja, ko, zh, zh_tw, vi) and Polish next to the EN/FR/DE/ES ones.
+
+Polish has the same shape as the Asia languages in the firmware (a one-column table,
+`strings_pl.h`), so it is generated here too; its Desk-only text lives in `desk_strings_pl.py`.
 
 The EU catalogs come from the firmware STRTAB (`gen_locales.py`). The firmware's Asia
 languages live in separate one-column tables (`PocketOBI/strings_<lang>.h`, `STRTAB_<LANG>[]`,
@@ -33,7 +36,7 @@ sys.path.insert(0, str(_HERE))
 from gen_locales import DEFAULT_OUT, _c_string_literals  # noqa: E402
 
 # Desk language code -> firmware header suffix / array suffix.
-ASIA = {"ja": "JA", "ko": "KO", "zh": "ZH", "zh_tw": "ZH_TW", "vi": "VI"}
+ASIA = {"ja": "JA", "ko": "KO", "zh": "ZH", "zh_tw": "ZH_TW", "vi": "VI", "pl": "PL"}
 DEFAULT_FW = _HERE.parent.parent / "PocketOBI"
 _PH = re.compile(r"%[-0-9.]*[dsfX]|\{[a-z_]+(?::[^}]*)?\}")
 
@@ -79,6 +82,8 @@ def main() -> int:
     ap.add_argument("--overwrite", action="store_true", help="reseed, discarding hand edits")
     args = ap.parse_args()
     from desk_strings_asia import ASIA as OVER        # noqa: E402
+    from desk_strings_pl import PL                    # noqa: E402
+    OVER = {**OVER, "pl": PL}
 
     en = json.loads((args.out / "en.json").read_text(encoding="utf-8"))
     bad = 0

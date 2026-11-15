@@ -101,11 +101,11 @@ tests/           pytest suite (decode, verdict, protocol, db, config, export, de
 
 ## Translations
 
-PackScope is in English, French, German, Spanish, Japanese, Korean, Simplified Chinese,
+PackScope is in English, French, German, Spanish, Polish, Japanese, Korean, Simplified Chinese,
 Traditional Chinese and Vietnamese; pick one in Settings. The wording it shares with the PocketOBI
 screen comes from the firmware: its Japanese was reviewed by a native speaker, its Chinese was
-written by native users. The rest of the Asian text, and the German and Spanish, have not been
-checked by a native speaker yet: corrections are welcome, see [docs/TRANSLATING.md](docs/TRANSLATING.md).
+written by native users. The rest of the Asian text, the Polish (a user's draft completed by us), and the
+German and Spanish have not been checked by a native speaker yet: corrections are welcome, see [docs/TRANSLATING.md](docs/TRANSLATING.md).
 
 ## License
 

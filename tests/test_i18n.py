@@ -124,6 +124,17 @@ def test_vietnamese_has_its_diacritics_back():
     i18n.set_language("en")
 
 
+def test_polish_shares_the_device_words():
+    # S_* from the firmware's Polish column (PocketOBI 2.8.0, #39); the Desk text says "Most PC"
+    # like the device menu, and the probe names read in Polish (#2).
+    i18n.set_language("pl")
+    assert i18n.t("S_PC_BRIDGE") == "Most PC"
+    assert "Most PC" in i18n.t("DESK_CONN_TIP")
+    assert i18n.t("DESK_DIAG_THERM_OBS_ONE", name="sonda ogniw", val=150.0,
+                  other_name="sonda płytki", other_v=21.0).startswith("sonda ogniw: 150 °C")
+    i18n.set_language("en")
+
+
 def test_placeholders_match_english_in_every_language():
     import re
     ph = re.compile(r"%[-0-9.]*[dsfX]|\{[a-z_]+(?::[^}]*)?\}")

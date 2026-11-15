@@ -17,7 +17,8 @@ from .components import SectionHeader, divider
 _UNIT = {"°C": "C", "°F": "F"}
 _UNIT_INV = {v: k for k, v in _UNIT.items()}
 # Each language is listed in its own name, so a user lost in the wrong one still finds theirs.
-_LANG = {"English": "en", "Français": "fr", "Deutsch": "de", "Español": "es", "日本語": "ja",
+_LANG = {"English": "en", "Français": "fr", "Deutsch": "de", "Español": "es", "Polski": "pl",
+         "日本語": "ja",
          "한국어": "ko", "简体中文": "zh", "繁體中文": "zh_tw", "Tiếng Việt": "vi"}
 _LANG_INV = {v: k for k, v in _LANG.items()}
 
